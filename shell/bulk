@@ -1,0 +1,52 @@
+#1/bin/bash
+
+. env.sh
+
+mkdir tmp
+
+# Create xml files for app domains
+# and load them in
+for i in {1..9};
+do
+	domname=Appdomain$i
+	echo "Creating App domain named $domname"
+	
+    echo "<ApplicationDomain><name>$domname</name><description>test application domain</description></ApplicationDomain>" > tmp/app$i.xml;
+    curl -u $USER:$PW -H "Content-Type: application/xml" --request POST --data "@tmp/app$i.xml" $URL/appdomain;
+	/bin/echo ""
+	
+	for j in {1..9}
+	do
+		echo "<Resource><name>HTTP::oim1admin::/index$i-$j.html::::</name><applicationDomainName>$domname</applicationDomainName><hostIdentifierName>oim1admin</hostIdentifierName><protectionLevel>EXCLUDED</protectionLevel><resourceURL>/index$i-$j.html</resourceURL><resourceTypeName>HTTP</resourceTypeName><Operations/></Resource>" > "tmp/app$i-res$j.xml";
+		curl -u $USER:$PW -H "Content-Type: application/xml" --request POST --data "@tmp/app$i-res$j.xml" $URL/resource?appdomain=$domname
+		/bin/echo ""
+	done
+	/bin/echo ""
+done
+
+/bin/echo ""
+
+
+
+
+read -p "Press [Enter] key to delete..."
+
+#Delete resources and then domains
+for i in {1..9};
+do
+	domname=Appdomain$i
+	echo "Working on App domain named $domname"
+	
+	for j in {1..10}
+	do
+		curl -u $USER:$PW --request DELETE "$URL/resource?appdomain=$domname&name=HTTP%3A%3Aoim1admin%3A%3A%2Findex$i-$j.html%3A%3A%3A%3A"
+		/bin/echo ""
+	done
+	
+	echo "Deleting app domain $domname"
+    curl -u $USER:$PW --request DELETE $URL/appdomain?name=$domname;
+	/bin/echo ""
+	
+	/bin/echo ""
+done
+

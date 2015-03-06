@@ -1,0 +1,20 @@
+#!/bin/bash 
+. ./env.sh
+
+if [ -z $1 ]; then
+	echo "Using default value $APPDOMAIN"
+else
+	APPDOMAIN=$1
+fi
+	
+echo "Getting policies for app domain $APPDOMAIN..."
+
+echo "Authentication Policies"
+curl -s -u $USER:$PW $URL/authnpolicy?appdomain=$APPDOMAIN  | xmllint --format -
+/bin/echo ""
+
+echo "Authorization Policies"
+curl -s -u $USER:$PW $URL/authzpolicy?appdomain=$APPDOMAIN  | xmllint --format -
+/bin/echo ""
+/bin/echo ""
+

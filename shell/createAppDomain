@@ -1,0 +1,35 @@
+#!/bin/bash 
+. ./env.sh
+
+if [ -z $1 ]; then
+	echo "Using default value $APPDOMAIN"
+else
+	APPDOMAIN=$1
+fi
+
+echo "Creating app domain $APPDOMAIN"
+
+cat > tmp/$$.xml <<EOF
+<?xml version="1.0"?>
+<ApplicationDomain>
+  <name>$APPDOMAIN</name>
+  <description>test application domain</description>
+</ApplicationDomain>
+EOF
+
+
+echo "Input file:"
+cat tmp/$$.xml
+
+echo ""
+
+curl -v \
+	-u $USER:$PW \
+	-H "Content-Type: application/xml" \
+	--request POST \
+	--data "@tmp/$$.xml" \
+	$URL/appdomain
+echo ""
+ 
+ 
+rm -f tmp/$$.xml

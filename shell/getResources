@@ -1,0 +1,14 @@
+#!/bin/bash 
+. ./env.sh
+
+if [ -z $1 ]; then
+	echo "Using default value $APPDOMAIN"
+else
+	APPDOMAIN=$1
+fi
+
+echo "Getting Resources in app domain $APPDOMAIN"
+
+curl -s -u $USER:$PW $URL/resource?appdomain=$APPDOMAIN  | xmllint --format -
+
+/bin/echo ""

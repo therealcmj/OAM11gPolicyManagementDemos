@@ -1,0 +1,19 @@
+#!/bin/bash 
+. ./env.sh
+
+if [ -z $1 ]; then
+	echo "Using default value $APPDOMAIN"
+else
+	APPDOMAIN=$1
+fi
+
+echo "Deleting app domain $APPDOMAIN"
+
+# should get the domain and display it before deleting
+echo "Current app domain content:"
+curl -s -u $USER:$PW $URL/appdomain?name=$APPDOMAIN  | xmllint --format -
+/bin/echo ""
+
+curl -s -u $USER:$PW --request DELETE $URL/appdomain?name=$APPDOMAIN
+
+/bin/echo ""
